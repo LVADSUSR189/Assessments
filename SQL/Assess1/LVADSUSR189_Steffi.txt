@@ -1,0 +1,19 @@
+LAB -1 
+1 - select customerID,DataUsed, avg(DataUsed) from customerinteractions where month= "March" group by customerID having DataUsed > avg(DataUsed);
+2 - select customerid from customerinteractions where (callduration and month ="March" ) > (callduration and month ="February" ) group by customerid;
+3 - select customerid from customerinteractions order by messagecount desc, dataused asc;
+
+LAB 2 
+4- select sum(totalsalesamount) as total_sales from quarterlysales where ProductTypeID = 1;
+5 - select ProductTypeID, sum(totalsalesamount) from quarterlysales  where Quarter = "Q1" group by ProductTypeID order by sum(totalsalesamount) desc ;
+6 - select  avg(totalsalesamount),avg(unitssold) from quarterlysales where ProductTypeID = 1 and Quarter = "Q1";
+
+LAB 3 
+7 - select region from sectorenergyconsumption where month = "March" and energysource = "Solar" and energysource = "Wind" ;
+8 -select sector, month, sum(consumptionkwh) from sectorenergyconsumption group by month, sector order by sum(consumptionkwh) desc ;
+9 - select month,energysource,consumptionKWh from sectorenergyconsumption where month = "February";
+
+LAB 4
+10 - select customername from insuranceactivities where investigation ="No" or feedbackscore > avg(feedbackscore);
+11 - select sum(annualpremium) from insuranceactivities where claimscount > 1 and feedbackscore > avg(feedbackscore);
+12 - select policyid, avg(feedbackscore) from insuranceactivities group by policyid;
