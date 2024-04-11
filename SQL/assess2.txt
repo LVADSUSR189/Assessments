@@ -1,0 +1,55 @@
+LAB 1 
+
+1 - select distinct(machine_id) from l1_maintenance_records where month(maintenance_date) = "3";
+
+2 - select maintenance_type, count(maintenance_id) from l1_maintenance_records 
+    where month(maintenance_date) = "3" group by maintenance_type;
+
+3 - select technician_name , count(maintenance_id) as count_maintenance_task, avg(cost)  as AvgCost from 
+l1_maintenance_records where month(maintenance_date) = "3" group by maintenance_id order by cost desc;
+
+LAB 2 
+
+4 - select product_id , avg(incident_count_pre_update) as avg_pre_update, avg(incident_count_post_update) avg_post_update,
+	(avg(incident_count_pre_update) - avg(incident_count_post_update)) as avg_reduction
+    from l2_updates group by product_id;
+
+5 - select update_id, sum(user_feedback_score) as satisfaction_score from l2_updates  group by update_id order by sum(user_feedback_score) desc;
+
+6 - select product_id, sum(incident_count_pre_update) as sum_pre_update, sum(incident_count_post_update) as sum_post_update,
+ (sum(incident_count_pre_update) - sum(incident_count_post_update)) as incident_count_improvement from l2_updates 
+ group by product_id order by incident_count_improvement asc;
+
+LAB 3 
+
+7 - select p.patient_name, f.facility_name, v.reason_for_visit, t.outcome, v.visit_date from l3_patients p
+ join l3_visits v on p.patient_id = v.patient_id
+ join l3_facilities f on v.facility_id = f.facility_id
+ join l3_treatments t on v.visit_id = t.visit_id 
+ where month(v.visit_date) = "3" and v.visit_id > 1;
+
+8 - select f.facility_id, f.facility_name, count(v.visit_id) as count_of_visits from l3_facilities f
+	join l3_visits v on f.facility_id = v.facility_id
+    where month(v.visit_date) = "3" and v.reason_for_visit = "Emergency"
+    group by f.facility_id;
+
+9 - select p.patient_id , p.patient_name, p.insurance_provider, t.outcome from l3_patients p
+	join l3_visits v on p.patient_id = v.patient_id
+    join l3_treatments t on v.visit_id = t.visit_id
+    where t.outcome="Complicated";
+
+
+LAB 4 - 
+
+10 - select product_id, product_name,category from l4_products where product_id in( select product_id from l4_sales order by quantity desc);
+
+11 - create view salesview1 as select sale_id,quantity,price,region from l4_sales,l4_stores,l4_products;
+select * from salesview1;
+select sum(price*quantity) as total_sales, region from salesview1 group by region;
+
+12 - select p.product_id, p.product_name,st.region,count(s.sale_id) as sales_count from l4_products p
+ join l4_sales s on p.product_id = s.product_id
+ join l4_stores st on s.store_id = st.store_id
+ where month(sale_date)="3" group by p.product_id, st.region;
+
+ 
