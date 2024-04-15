@@ -1,0 +1,110 @@
+LAB 1
+1 - select p.product_category, avg(s.sales_amount) as average_sales from products p 
+	join sales_records s on p.product_id = s.product_id
+    where s.sales_date > date_sub(s.sales_date, interval 30 day)
+    group by p.product_category
+
+2 - with sales as(
+select p.product_name, sum(s.sales_amount) as total_sales
+	from sales_records s 
+    join products p on s.product_id = p.product_id
+    where year(curdate())
+    group by p.product_name
+)
+select total_sales , rank() over(order by total_sales desc) from sales order by total_sales desc limit 3 ;
+
+3 - with sales_per as (
+select customer_id, sum(sales_amount)/100 as percentage_contribution from sales_records group by customer_id
+)
+select customer_id, percentage_contribution, rank() 
+	over(order by percentage_contribution desc) as rank_per_percentage from sales_per order by percentage_contribution desc;
+
+4 - select customer_id ,
+case 
+ when sales_date > date_sub(sales_date, interval 6 month )then "Consistent Buyers"
+ else "Occasional Buyers"
+end as customer_status
+from sales_records;
+
+LAB 2
+
+5 - select flight_id, departure_airport, arrival_airport, avg(base_price) as average_ticket_prices from flights 
+	group by flight_id;
+
+6 - select f.flight_number, f.departure_date , count(t.ticket_id) as ticket_sales from flights f
+	 join tickets t on f.flight_id = t.flight_id
+     where t.ticket_date > date_sub(t.ticket_date, interval 30 day)
+     group by f.flight_id
+     order by ticket_sales desc;
+
+7 - select p.passenger_name, sum(t.ticket_price) as total_price, p.frequent_flyer_status from passengers p 
+	join tickets t on p.passenger_id = t.passenger_id
+    group by p.passenger_name, p.frequent_flyer_status
+    order by total_price desc limit 5;
+
+8 - with top as (
+select month(ticket_date) as top_month, count(ticket_id) over(partition by month(ticket_date)) as tickets_sold from tickets
+)
+select distinct(top_month) , tickets_sold from top order by tickets_sold desc limit 1;
+
+LAB 3 
+
+9 - select ps.player_id, avg(ps.play_date - g.release_date) as average_playtime from playerscores ps
+JOIN games g on ps.game_id = g.game_id
+group by ps.player_id
+order by average_playtime;
+
+10 - select g.game_name, count(p.player_id) as total_number_of_players from games g
+ Join playerscores ps on g.game_id = ps.game_id 
+ join players p on ps.player_id = p.player_id
+ group by g.game_id
+ order by total_number_of_players desc limit 3;
+
+11 -  select game_id, avg(score) as average_score,max(score) as max_score, count(player_id) as total_players 
+	 from playerscores
+     group by game_id;
+
+12 - select p.player_id, p.registration_date, ps.play_date from players p
+	join playerscores ps on p.player_id = ps.player_id
+    where p.player_id in
+    (select ps.play_date > date_sub(ps.play_date, interval 30 day));
+
+LAB 4 
+
+13 - select doctor_id, sum(cost) as total_cost from treatments group by doctor_id
+	order by total_cost desc limit 5;
+
+14 - select treatment_name, sum(cost) as total_cost, sum(cost) /100 as percentage_contributed from treatments
+	group by treatment_name;
+
+15 - select patient_id, patient_name,admission_date, discharge_date from patients
+	where admission_date > date_sub(discharge_date, interval 30 day)
+    group by patient_id order by admission_date asc;
+
+16 - select gender, diagnosis , round(avg((discharge_date - admission_date)),0) as days from patients
+group by gender, diagnosis;
+
+LAB 5 
+
+17 - select c.department, e.semester, avg(e.grade) as average_grade from enrollments e
+	join courses c on e.course_id = c.course_id
+	group by c.department, e.semester
+    order by c.department , e.semester;
+
+18 - select major,count(student_id) as total_students, enrollment_year from students
+ group by major, student_id
+ order by total_students desc;
+
+19 - select s.student_id, s.student_name, e.semester , sum(c.credits) as total_credits from students s
+  join enrollments e on s.student_id = e.student_id
+  join courses c on e.course_id = c.course_id
+   group by e.semester,s.student_id
+   having sum(c.credits) >= 50;
+
+20 - with top as(
+select c.course_name , s.enrollment_year , count(s.student_id) as total_students from students s
+	join enrollments e on s.student_id = e.student_id
+    join courses c on e.course_id = c.course_id 
+    group by c.course_name,s.enrollment_year, s.student_id
+)
+select course_name, enrollment_year, total_students, rank() over(partition by enrollment_year order by total_students desc) as top_rank from top order by total_students desc;
